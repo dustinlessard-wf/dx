@@ -33,6 +33,16 @@ export class GithubClient {
       totalMergeTime += timeToMerge
       timesToMerge.push(timeToMerge)
       commentsCounts.push(pr.comments)
+      prUserSummary.prs.push(
+        new PrDetails(
+          pr.title,
+          pr.url,
+          pr.created_at,
+          pr.pull_request?.merged_at ?? '',
+          timeToMerge / 1000 / 60 / 60,
+          pr.comments,
+        ),
+      )
     }
 
     prUserSummary.count = prs.length
@@ -51,4 +61,23 @@ class PrUserSummary {
   medianTimeToMerge: number = 0
   averageComments: number = 0
   medianComments: number = 0
+  prs: PrDetails[] = []
+}
+
+class PrDetails {
+  title: string
+  url: string
+  created_at: string
+  merged_at: string
+  merge_time: number
+  comments: number
+
+  constructor(title: string, url: string, created_at: string, merged_at: string, merge_time: number, comments: number) {
+    this.title = title
+    this.url = url
+    this.created_at = created_at
+    this.merged_at = merged_at
+    this.merge_time = merge_time
+    this.comments = comments
+  }
 }

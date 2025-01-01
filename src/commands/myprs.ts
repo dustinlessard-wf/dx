@@ -19,9 +19,19 @@ export async function handler() {
   const login = await GithubClient.login()
   const prSummary = await GithubClient.prSummaryForUser(login, fromDate)
 
+  for (const pr of prSummary.prs) {
+    console.log(`Title: ${pr.title}`)
+    console.log(`URL: ${pr.url}`)
+    console.log(`Created: ${pr.created_at}`)
+    console.log(`Merged: ${pr.merged_at}`)
+    console.log(`Time to merge: ${pr.merge_time.toFixed(2)} hours`)
+    console.log(`Comments: ${pr.comments}`)
+    console.log('---')
+  }
+
   console.log(`Number of pull requests: ${prSummary.count}`)
   console.log(`Average time to merge: ${prSummary.averageTimeToMerge.toFixed(2)} hours`)
   console.log(`Median time to merge: ${prSummary.medianTimeToMerge.toFixed(2)} hours`)
-  console.log(`Average number of comments: ${prSummary.averageComments}`)
+  console.log(`Average number of comments: ${prSummary.averageComments.toFixed(2)}`)
   console.log(`Median number of comments: ${prSummary.medianComments}`)
 }
