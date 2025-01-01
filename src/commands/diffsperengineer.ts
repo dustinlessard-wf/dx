@@ -17,6 +17,9 @@ export async function handler() {
   const fromDate = await logger.prompt('Analyze data from which date? (YYYY-MM-DD)', {
     type: 'text',
   })
+  const untilDate = await logger.prompt('Analyze data until which date? (YYYY-MM-DD)', {
+    type: 'text',
+  })
   const login = await GithubClient.login()
 
   console.log('Using this Github account to retrieve data and inspect: %s', login)
@@ -29,7 +32,7 @@ export async function handler() {
   const prCountsPerUser = []
 
   for (const user of users) {
-    const prSummary = await GithubClient.prSummaryForUser(user, fromDate)
+    const prSummary = await GithubClient.prSummaryForUser(user, fromDate, untilDate)
     console.log(`User: ${user}`)
     console.log(`Number of pull requests: ${prSummary.count}`)
     prCountsPerUser.push(prSummary.count)

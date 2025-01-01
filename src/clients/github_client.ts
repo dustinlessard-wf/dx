@@ -13,11 +13,11 @@ export class GithubClient {
     auth: process.env.GITHUB_TOKEN,
   })
 
-  static async prSummaryForUser(username: string, fromDate: string): Promise<PrUserSummary> {
+  static async prSummaryForUser(username: string, fromDate: string, untilDate: string): Promise<PrUserSummary> {
     console.log(`Getting PRs for ${username}`)
     const prs = await GithubClient.octokit.paginate(GithubClient.octokit.rest.search.issuesAndPullRequests, {
-      q: `type:pr+is:merged+author:${username}+created:>=${fromDate}`,
-      per_page: 100, // use the number you like
+      q: `type:pr+is:merged+author:${username}+created:${fromDate}..${untilDate}`,
+      per_page: 100,
     })
 
     const prUserSummary: PrUserSummary = new PrUserSummary()

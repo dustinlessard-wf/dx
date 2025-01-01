@@ -16,8 +16,11 @@ export async function handler() {
   const fromDate = await logger.prompt('Analyze data from which date? (YYYY-MM-DD)', {
     type: 'text',
   })
+  const untilDate = await logger.prompt('Analyze data until which date? (YYYY-MM-DD)', {
+    type: 'text',
+  })
   const login = await GithubClient.login()
-  const prSummary = await GithubClient.prSummaryForUser(login, fromDate)
+  const prSummary = await GithubClient.prSummaryForUser(login, fromDate, untilDate)
 
   for (const pr of prSummary.prs) {
     console.log(`Title: ${pr.title}`)
