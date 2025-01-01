@@ -120,6 +120,13 @@ fork-and-pull request workflow. Here are a few guidelines to keep in mind:
 By adhering to these guidelines, you help maintain the quality and consistency of the project, making it easier for
 others to contribute and for users to understand and utilize the project effectively.
 
+## Adding a new commmand
+
+To add a new command,
+
+1. Create a new file within `src/commands` named as the command you seek to add
+2. Add a reference to this file within the `commands` constant in `src/commands/index.ts`
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
