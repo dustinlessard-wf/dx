@@ -1,5 +1,7 @@
 import { Argv } from 'yargs'
-import { Octokit } from 'octokit'
+import { GithubClient } from '../clients/github_client'
+import { logger } from '../logger'
+import { median } from '../../src/utilities/math'
 
 interface PrsArgv {}
 
@@ -12,28 +14,30 @@ export function builder(yargs: Argv<PrsArgv>): Argv {
 }
 
 export async function handler() {
-  const octokit = new Octokit({
-    auth: process.env.GITHUB_TOKEN,
+  const fromDate = await logger.prompt('Analyze data from which date? (YYYY-MM-DD)', {
+    type: 'text',
   })
-
-  const {
-    data: { login },
-  } = await octokit.rest.users.getAuthenticated()
+  const login = await GithubClient.login()
 
   console.log('Using this Github account to retrieve data and inspect: %s', login)
 
-  const users = await octokit.paginate('GET /orgs/workiva/members', {
-    org: 'ORG',
-    headers: {
-      'X-GitHub-Api-Version': '2022-11-28',
-    },
-  })
+  const users = await GithubClient.usersForOrg('workiva')
 
-  console.log(users)
   console.log(`Number of users: ${users.length}`)
   console.log('DONE!!')
 
-  //   for (const user of users) {
+  const prCountsPerUser = []
 
-  //   }
+  for (const user of users) {
+    const prSummary = await GithubClient.prSummaryForUser(user, fromDate)
+    console.log(`User: ${user}`)
+    console.log(`Number of pull requests: ${prSummary.count}`)
+    prCountsPerUser.push(prSummary.count)
+  }
+
+  const medianDiffsPerEngineer = median(prCountsPerUser)
+  console.log(`Median diffs per engineer: ${medianDiffsPerEngineer}`)
+
+  const averageDiffsPerEngineer = prCountsPerUser.reduce((a, b) => a + b, 0) / prCountsPerUser.length
+  console.log(`Average diffs per engineer: ${averageDiffsPerEngineer}`)
 }

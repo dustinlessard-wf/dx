@@ -47,11 +47,26 @@ export class GithubClient {
 
     prUserSummary.count = prs.length
     prUserSummary.averageTimeToMerge = totalMergeTime / prs.length / 1000 / 60 / 60
-    prUserSummary.medianTimeToMerge = median(timesToMerge) / 1000 / 60 / 60
+    if (timesToMerge.length != 0) {
+      prUserSummary.medianTimeToMerge = median(timesToMerge) / 1000 / 60 / 60
+    }
     prUserSummary.averageComments = commentsCounts.reduce((a, b) => a + b, 0) / commentsCounts.length
-    prUserSummary.medianComments = median(commentsCounts)
+    if (commentsCounts.length != 0) {
+      prUserSummary.medianComments = median(commentsCounts)
+    }
 
     return prUserSummary
+  }
+
+  static async usersForOrg(org: string): Promise<string[]> {
+    const users = await GithubClient.octokit.paginate(GithubClient.octokit.rest.orgs.listMembers, {
+      org,
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    })
+
+    return users.map((user) => user.login)
   }
 }
 
